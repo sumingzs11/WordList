@@ -1,5 +1,8 @@
-﻿  pch.cpp
-  wordProcess.cpp
+﻿  wordProcess.cpp
+d:\software\wordlist\wordlist\wordlist\wordprocess.cpp(86): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+d:\software\wordlist\wordlist\wordlist\wordprocess.cpp(87): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+d:\software\wordlist\wordlist\wordlist\wordprocess.cpp(313): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+d:\software\wordlist\wordlist\wordlist\wordprocess.cpp(352): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
   wordlist.cpp
   正在生成代码...
   wordlist.vcxproj -> D:\software\wordlist\wordlist\x64\Debug\wordlist.exe
