@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+      <FILENAME>wordlist.cpp</FILENAME>
+      <LINE>113</LINE>
+      <COLUMN>7</COLUMN>
+    </SFA>
+    <DEFECTCODE>6387</DEFECTCODE>
+    <DESCRIPTION>“fp”可能是“0”: 这不符合函数“fclose”的规范。</DESCRIPTION>
+    <FUNCTION>ThirdState</FUNCTION>
+    <DECORATED>?ThirdState@@YAXQAPAD@Z</DECORATED>
+    <FUNCLINE>106</FUNCLINE>
+    <PROBABILITY>1</PROBABILITY>
+    <RANK>4</RANK>
+    <CATEGORY>
+      <RULECATEGORY>mspft</RULECATEGORY>
+    </CATEGORY>
+    <PATH>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>107</LINE>
+        <COLUMN>7</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>108</LINE>
+        <COLUMN>4</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>109</LINE>
+        <COLUMN>10</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>110</LINE>
+        <COLUMN>8</COLUMN>
+        <KEYEVENT>
+          <ID>1</ID>
+          <KIND>分支</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>“fp”可能为 NULL (进入此分支)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>111</LINE>
+        <COLUMN>12</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>113</LINE>
+        <COLUMN>7</COLUMN>
+        <KEYEVENT>
+          <ID>2</ID>
+          <KIND>使用情况</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>“fp”是对“fclose”的输入(在 d:\windows kits\10\include\10.0.17134.0\ucrt\stdio.h:147 处声明)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\software\wordlist\wordlist\wordlist\</FILEPATH>
+        <FILENAME>wordlist.cpp</FILENAME>
+        <LINE>113</LINE>
+        <COLUMN>7</COLUMN>
+        <KEYEVENT>
+          <ID>3</ID>
+          <KIND>使用情况</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>“fp”不应为 NULL，因为这与“fclose”上的 SAL 批注不一致</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+    </PATH>
+  </DEFECT>
+</DEFECTS>

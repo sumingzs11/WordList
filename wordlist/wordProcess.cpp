@@ -137,78 +137,289 @@ bool ProcessNoRing::topologicalSort()    //拓扑排序
 	return true;
 }
 
-void ProcessNoRing::getMaxPathLen()    //获取最长路径
+bool ProcessNoRing::HasRing() {
+	init();
+	getWord(fileName);
+	createMatrix();
+	if (topologicalSort())
+	{
+		return true;
+	}
+	return false;
+}
+
+void ProcessNoRing::getMaxPathLen(int arg, char first, char last) //获取最长路径  arg=0:单词数目最多  arg=1:单词长度最长; first:指定的首字母，没有输入0  last：指定的尾字母，没有输入0
 {
 	int v1, v2;
+	int length = 1;
+	bool firstFlag, lastFlag;    //true:找到了符合的开始/结尾  false:没有找到符合的开始/结尾
+	bool headFlag;    //标记是否指定开始字母  true:找到  false:没找到
+
+	if (first == 0)
+	{
+		firstFlag = true;
+		headFlag = false;
+	}
+	else if (first >= 'a'&&first <= 'z')
+	{
+		firstFlag = false;
+		headFlag = true;
+	}
+	else if (first >= 'A'&&first <= 'Z')
+	{
+		firstFlag = false;
+		headFlag = true;
+		first = first - 'A' + 'a';
+	}
+	else
+	{
+		cout << "illegimate input as first char: " << first << endl;
+		return;
+	}
+
+	if (last == 0)
+	{
+		lastFlag = true;
+	}
+	else if (last >= 'a'&&last <= 'z')
+	{
+		lastFlag = false;
+	}
+	else if (last >= 'A'&&last <= 'Z')
+	{
+		lastFlag = false;
+		last = last - 'A' + 'a';
+	}
+	else
+	{
+		cout << "illegimate input as last char: " << last << endl;
+		return;
+	}
+
 	for (int i = 0; i < wordNum; i++)
 	{
 		v2 = orderArr[i];
+		if (!firstFlag)
+		{
+			if (wordArr[v2][0] == first)
+			{
+				firstFlag = true;
+				if (arg == 0)
+				{
+					maxPath[v2] = 1;
+				}
+				else
+				{
+					maxPath[v2] = wordArr[v2].length();
+				}
+				continue;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		if (maxPath[v2] == 0)
+		{
+			if (arg == 0)
+			{
+				maxPath[v2] = 1;
+			}
+			else
+			{
+				maxPath[v2] = wordArr[v2].length();
+			}
+		}
 		for (int j = 0; j < i; j++)
 		{
 			v1 = orderArr[j];
 			if (arc[v1][v2] != FINITY)    //表示v1可达v2，进行判断
 			{
-				if (maxPath[v1] + 1 > maxPath[v2])
+				if (arg == 1)
 				{
-					maxPath[v2] = maxPath[v1] + 1;
+					length = arc[v1][v2];
+				}
+				if (headFlag&&maxPath[v1] == 0)
+				{
+					continue;
+				}
+				path[v1][v2] = maxLen;
+				if (maxPath[v1] + length > maxPath[v2])
+				{
+					maxPath[v2] = maxPath[v1] + length;
 				}
 				if (maxPath[v2] > maxLen)
 				{
 					maxLen = maxPath[v2];
 					path[v1][v2] = maxLen;
 				}
-				//cout << "v1: " << v1 << " v2: " << v2 << " max: " << max << endl;
+				//cout << "v1: " << v1 << " v2: " << v2 << " maxLen: " << maxLen << endl;
+				//cout << wordArr[v1] << "   " << wordArr[v2] << endl;
 			}
 		}
 	}
-	cout << "maxLen: " << maxLen << endl;
+	if (lastFlag)
+	{
+		cout << "maxLen: " << maxLen << endl;
+	}
 }
 
 void ProcessNoRing::getMaxPath()    //获取最长路径
 {
 	stack<int> s;    //记录路线的栈
 	int max;    //记录当前最长路径长度
-	for (int i = wordNum - 1; i > 0;)
+	int stackSize;    //栈的长度
+	//bool flag = false;    //标识是不是第一次遇到链里的单词
+	int iStart = 0, jStart = 0;    //记录开始的单词是哪一个
+	for (int i = 0; i < wordNum; i++)
 	{
 		for (int j = 0; j < wordNum; j++)
 		{
-			point[j] = path[j][i];
-		}
-		sort(point, point + wordNum);
-		max = point[wordNum - 1];    //排序后的最大值
-		if (max != 0)
-		{
-			for (int j = 0; j < wordNum; j++)
+			if (path[i][j] > path[iStart][jStart])
 			{
-				if (path[j][i] == max)
-				{
-					s.push(i);
-					i = j;
-					if (i == 0)
-					{
-						s.push(i);
-					}
-					break;
-				}
+				iStart = i;
+				jStart = j;
 			}
 		}
 	}
-	cout << "max path is: ";
-	for (int i = 0; i < s.size(); i++)
+	for (int j = jStart; j >=0;)
 	{
-		if (i != 0)
+		for (int i = 0; i < wordNum; i++)
 		{
-			cout << " -> ";
+			point[i] = path[i][j];
 		}
-		cout << s.top();
+		sort(point, point + wordNum);
+		max = point[wordNum - 1]; //排序后的最大值
+		if (max == 0)
+		{
+			s.push(j);
+			break;
+		}
+		for (int i = 0; i < wordNum; i++)
+		{
+			if (path[i][j] == max)
+			{
+				s.push(j);
+				j = i;
+			}
+		}
+	}
+
+
+	ofstream result("solution.txt");
+	stackSize = s.size();
+	for (int i = 0; i < stackSize; i++)
+	{
+		result << wordArr[s.top()]<<endl;
 		s.pop();
 	}
+	result.close();
 }
 
-int ProcessNoRing::processW()
+void ProcessNoRing::getMaxPathWithTail(int arg, char last)    //获取带尾部的最长路径  arg=0:单词数目最多  arg=1:单词长度最长;
+{
+	stack<int> s;    //记录路线的栈
+	int max;    //记录当前最长路径长度
+	int stackSize;    //栈的长度
+	//bool flag = false;    //标识是不是第一次遇到链里的单词
+	int iStart = 0, jStart = 0;    //记录开始的单词是哪一个
+	string tempStr;    //记录可能会用到的单词
+	for (int i = 0; i < wordNum; i++)
+	{
+		for (int j = 0; j < wordNum; j++)
+		{
+			if (path[i][j] > path[iStart][jStart])
+			{
+				iStart = i;
+				jStart = j;
+			}
+		}
+	}
+	for (int j = jStart; j >= 0;)
+	{
+		for (int i = 0; i < wordNum; i++)
+		{
+			point[i] = path[i][j];
+		}
+		sort(point, point + wordNum);
+		max = point[wordNum - 1]; //排序后的最大值
+		if (max == 0)
+		{
+			s.push(j);
+			break;
+		}
+		for (int i = 0; i < wordNum; i++)
+		{
+			if (path[i][j] == max)
+			{
+				s.push(j);
+				j = i;
+			}
+		}
+	}
+
+	if (last >= 'a'&&last <= 'z')
+	{
+		//last = last;
+	}
+	else if (last >= 'A'&&last <= 'Z')
+	{
+		last = last - 'A' + 'a';
+	}
+	else
+	{
+		cout << "illegimate input as last char: " << last << endl;
+		return;
+	}
+
+	maxLen = 0;
+	stackSize = s.size();
+	ofstream result("solution.txt");
+	for (int i = 0; i < stackSize; i++)
+	{
+		result << wordArr[s.top()]<<endl;
+		tempStr = wordArr[s.top()];
+		s.pop();
+		if (arg == 0)
+		{
+			maxLen++;
+		}
+		else
+		{
+			maxLen += tempStr.length();
+		}
+		if (tempStr[tempStr.length() - 1] == last)
+		{
+			if (s.empty())
+			{
+				
+				return;
+			}
+			else
+			{
+				if (wordArr[s.top()][wordArr[s.top()].length() - 1] == last)
+				{
+					
+					result << wordArr[s.top()] << endl;
+					if (arg == 0)
+					{
+						maxLen++;
+					}
+					else
+					{
+						maxLen += wordArr[s.top()].length();
+					}
+				}
+				return;
+			}
+		}
+	}
+	result.close();
+}
+
+void ProcessNoRing::ProcessW(int start,int end)
 {
 	init();
-	ofstream result("result.txt");
 	getWord(fileName);
 	createMatrix();
 	if (topologicalSort())
@@ -219,23 +430,52 @@ int ProcessNoRing::processW()
 	{
 		cout << "topologicalSort failed!" << endl;
 	}
-	getMaxPathLen();
-	getMaxPath();    //这个还有问题，等等回来写吧
-	for (int i = 0; i < wordNum; i++)
-	{
-		result << wordArr[i] << ":  ";
-		for (int j = 0; j < wordNum; j++)
-		{
-			result << arc[i][j] << "  ";
-		}
-		result << endl;
+	if (start && !end) {
+		getMaxPathLen(0, StartWord, 0);
+		getMaxPath();
 	}
-	result << endl;
-	for (int i = 0; i < wordNum; i++)
-	{
-		result << wordArr[orderArr[i]] << "  ";
+	else if (end && !start) {
+		getMaxPathLen(0, 0, EndWord);
+		getMaxPathWithTail(0, EndWord);
 	}
-	return 0;
+	else if (end&&start) {
+		getMaxPathLen(0, StartWord, EndWord);
+		getMaxPath();
+	}
+	else {
+		getMaxPathLen(0, 0, 0);
+		getMaxPath();
+	}  
+}
+
+void ProcessNoRing::ProcessC(int start,int end) {
+	init();
+	getWord(fileName);
+	createMatrix();
+	if (topologicalSort())
+	{
+		cout << "topologicalSort success!" << endl;
+	}
+	else
+	{
+		cout << "topologicalSort failed!" << endl;
+	}
+	if (start && !end) {
+		getMaxPathLen(1, StartWord, 0);
+		getMaxPath();
+	}
+	else if (end && !start) {
+		getMaxPathLen(1, 0, EndWord);
+		getMaxPathWithTail(1, EndWord);
+	}
+	else if (end&&start) {
+		getMaxPathLen(1, StartWord, EndWord);
+		getMaxPath();
+	}
+	else {
+		getMaxPathLen(1, 0, 0);
+		getMaxPath();
+	}
 }
 
 ProcessNoRing::ProcessNoRing(string fileName) {
@@ -378,7 +618,7 @@ void ProcessWithRing::DFS(int nowPoint, int count)
 }
 
 void ProcessWithRing::ProcessW(int start,int end) {
-	ofstream result("result.txt");
+	ofstream result("solution.txt");
 	getWord(fileName);
 	createMatrix();
 	for (int i = 0; i < wordNum; i++)
@@ -457,11 +697,11 @@ void ProcessWithRing::ProcessW(int start,int end) {
 	if (x2 == 0) {
 		cout << "没有存在的路径" << endl;
 	}
-	
+	result.close();
 }
 
 void ProcessWithRing::ProcessC(int start,int end) {
-	ofstream result("result.txt");
+	ofstream result("solution.txt");
 	getWord(fileName);
 	createMatrix();
 	for (int i = 0; i < wordNum; i++)
@@ -540,22 +780,42 @@ void ProcessWithRing::ProcessC(int start,int end) {
 	if (x2 == 0) {
 		cout << "没有存在的路径" << endl;
 	}
+	result.close();
 }
 
 
 ////////////////////////////////
 void StartProcess() {
+
 	if (EnalbleLoop) { //有环
+		ProcessNoRing NoRing = ProcessNoRing(fileName);
 		ProcessWithRing HasRing= ProcessWithRing(fileName);
-		if (process == 0) {  //采用-w
-			HasRing.ProcessW(ProStart, ProEnd);
+		if (NoRing.HasRing()) {  //是图
+			if (process == 0) {  //采用-w
+				NoRing.ProcessW(ProStart, ProEnd);
+			}
+			else {
+				NoRing.ProcessC(ProStart, ProEnd);
+			}
 		}
 		else {
-			HasRing.ProcessC(ProStart, ProEnd);
+			if (process == 0) {  //采用-w
+				HasRing.ProcessW(ProStart, ProEnd);
+			}
+			else {
+				HasRing.ProcessC(ProStart, ProEnd);
+			}
 		}
+		
 	}
 	else {
-
+		ProcessNoRing NoRing = ProcessNoRing(fileName);
+		if (process == 0) {  //采用-w
+			NoRing.ProcessW(ProStart, ProEnd);
+		}
+		else {
+			NoRing.ProcessC(ProStart, ProEnd);
+		}
 	}
 }
 
